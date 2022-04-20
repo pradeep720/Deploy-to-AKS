@@ -1,8 +1,5 @@
 trigger: none
 
-resources:
-- repo: self
-
 variables:
   imageRepo: sampleapp
   tag: '$(Build.BuildId)'
