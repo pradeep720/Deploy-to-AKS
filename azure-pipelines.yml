@@ -6,7 +6,7 @@ pool:
 variables:
   imageRepo: sampleapp
   tag: '$(Build.BuildId)'
-  serviceconnection: K8s-Azure-container-registry
+  serviceconnection: docker service connection
 
 stages:
 - stage: Build
