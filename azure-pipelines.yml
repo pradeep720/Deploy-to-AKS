@@ -6,6 +6,7 @@ resources:
 variables:
   imageRepo: sampleapp
   tag: '$(Build.BuildId)'
+  serviceconnection: K8s-Azure-container-registry
 
 stages:
 - stage: Build
@@ -19,7 +20,7 @@ stages:
     - task: Docker@2
       displayName: Build an image
       inputs:
-        containerRegistry: $(K8s-Azure-container-registry)
+        containerRegistry: $(serviceconnection)
         repository: '$(imageRepo)'
         command: 'buildAndPush'
         Dockerfile: '$(Build.SourcesDirectory)/app/Dockerfile'
