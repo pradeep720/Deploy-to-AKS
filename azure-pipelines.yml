@@ -46,16 +46,6 @@ stages:
         artifactName: 'manifests'
         targetPath: '$(Pipeline.Workspace)/manifests'
 
-
-    - task: KubernetesManifest@0
-      inputs:
-        action: 'createSecret'
-        kubernetesServiceConnection: 'test-k8s-serviceconnection'
-        namespace: 'default'
-        secretType: 'dockerRegistry'
-        secretName: '$(acrsecret)'
-        dockerRegistryEndpoint: 'docker service connection'
-
     - task: KubernetesManifest@0
       inputs:
         action: 'deploy'
