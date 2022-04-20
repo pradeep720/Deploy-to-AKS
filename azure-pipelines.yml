@@ -1,8 +1,5 @@
 trigger: none
 
-pool:
-      vmImage: ubuntu-latest
-      
 variables:
   imageRepo: sampleapp
   tag: '$(Build.BuildId)'
@@ -14,7 +11,8 @@ stages:
   jobs:
   - job: Build
     displayName: Build
-    
+    pool:
+      vmImage: ubuntu-latest
     steps:
     - task: Docker@2
       displayName: Build an image
@@ -24,4 +22,25 @@ stages:
         command: 'buildAndPush'
         Dockerfile: '$(Build.SourcesDirectory)/app/Dockerfile'
         tags: '$(tag)'
-   
+    
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Pipeline.Workspace)/s/kubernetes'
+        artifact: 'manifests'
+        publishLocation: 'pipeline'
+    
+- stage: deploy
+  displayName: Deploy to AKS
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'manifests'
+        targetPath: '$(Pipeline.Workspace)/manifests'
+
+  
