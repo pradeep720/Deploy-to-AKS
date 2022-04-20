@@ -30,10 +30,13 @@ stages:
         publishLocation: 'pipeline'
     
 - stage: deploy
-  displayName: Deploy to AKS
+  displayName: Deploy to Dev
+  dependsOn: Build
+  variables:
+    acrsecret: k8sexampleacrauth
   jobs:
-  - job: Build
-    displayName: Build
+  - job: deploy
+    displayName: deploy to aks
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -43,4 +46,22 @@ stages:
         artifactName: 'manifests'
         targetPath: '$(Pipeline.Workspace)/manifests'
 
+
+    - task: KubernetesManifest@0
+      inputs:
+        action: 'createSecret'
+        kubernetesServiceConnection: 'test-k8s-serviceconnection'
+        namespace: 'default'
+        secretType: 'dockerRegistry'
+        secretName: '$(acrsecret)'
+        dockerRegistryEndpoint: 'docker service connection'
+
+    - task: KubernetesManifest@0
+      inputs:
+        action: 'deploy'
+        kubernetesServiceConnection: 'test-k8s-serviceconnection'
+        namespace: 'default'
+        manifests: |
+          $(Pipeline.Workspace)/manifests/deployment.yml
+          $(Pipeline.Workspace)/manifests/service.yml 
   
